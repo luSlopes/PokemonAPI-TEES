@@ -1,0 +1,21 @@
+GET http:localhost:3000/api/v1/pokemon
+
+###
+
+GET http:localhost:3000/api/v1/pokemon?type=Psychic
+
+###
+
+POST http:localhost:3000/api/v1/pokemon
+Content-Type: application/json
+
+{
+    "id":"150",
+    "name":"Mewtwo",
+    "type":"Psychic",
+    "hp":106
+}
+
+###
+
+DELETE http:localhost:3000/api/v1/pokemon/1
