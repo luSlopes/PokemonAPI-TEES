@@ -1,99 +1,128 @@
 import type { FastifyPluginAsync } from "fastify";
 import { InMemoryPokemonRepository } from "@infrastructure/database/inMemoryPokemon.repository";
 import type { Pokemon } from "@domain/entities/pokemon";
+import {
+  errorSchema,
+  pokemonInputSchema,
+  pokemonUpdateSchema,
+} from "@docs/swagger";
 
 const database = new InMemoryPokemonRepository();
 
 export const pokemonRoutes: FastifyPluginAsync = async (app) => {
-  ((app.get("/", async (req, reply) => {
+  app.get<{ Querystring: { type?: string } }>("/", {
+    schema: {
+      tags: ["Pokémon"],
+      summary: "Lista os pokémons do catálogo",
+      querystring: {
+        type: "object",
+        properties: { type: { type: "string", description: "Filtra por tipo" } },
+      },
+      response: {
+        200: { type: "array", items: { $ref: "Pokemon#" } },
+        404: errorSchema,
+      },
+    },
+  }, async (req, reply) => {
     const { type } = req.query;
     if (type !== undefined) {
       try {
-        const pokemons = database.findAllByType(type);
-        reply.send(pokemons).status(200);
+        return reply.status(200).send(database.findAllByType(type));
       } catch (err) {
-        reply.status(404).send({
-          error: err,
+        return reply.status(404).send({
+          error: err instanceof Error ? err.message : "Pokémon não encontrado",
         });
       }
     }
+    return reply.status(200).send(database.findAllPokemons());
+  });
 
-    const pokemons = database.findAllPokemons();
-    reply.send(pokemons).status(200);
-  }),
-  app.post("/", async (req, reply) => {
-    const { id, name, type, hp } = req.body;
-
-    const newPokemon: Pokemon = {
-      id: id,
-      name: name,
-      type: type,
-      hp: hp,
-    };
-
-    if (!id || !name || !type || !hp) {
-      reply.status(401).send("Preencha todos os dados necessários");
-    }
-
-    let createdPokemon: Pokemon | null = null;
-
+  app.post<{ Body: Pokemon }>("/", {
+    schema: {
+      tags: ["Pokémon"],
+      summary: "Adiciona um pokémon ao catálogo",
+      body: pokemonInputSchema,
+      response: {
+        201: {
+          type: "object",
+          required: ["created", "createdPokemon"],
+          properties: {
+            created: { type: "boolean" },
+            createdPokemon: { $ref: "Pokemon#" },
+          },
+        },
+        400: errorSchema,
+        404: errorSchema,
+      },
+    },
+  }, async (req, reply) => {
     try {
-      createdPokemon = database.createPokemon(newPokemon);
+      const createdPokemon = database.createPokemon(req.body);
+      return reply.status(201).send({ created: true, createdPokemon });
     } catch (err) {
-      reply.status(404).send({
-        created: false,
-        error: err,
+      return reply.status(404).send({
+        error: err instanceof Error ? err.message : "Não foi possível criar o pokémon",
       });
     }
-    reply.status(201).send({
-      created: true,
-      createdPokemon: createdPokemon,
-    });
-  })),
-    app.delete("/:id", async (req, reply) => {
-      const { id } = req.params;
+  });
 
-      let deletedPokemon: Pokemon | null = null;
-      try {
-        deletedPokemon = database.deletePokemon(id);
-      } catch (err) {
-        reply.status(404).send({
-          deleted: false,
-          error: err,
-        });
-      }
-      reply.status(200).send({
-        deleted: true,
-        deletedPokemon: deletedPokemon,
+  app.delete<{ Params: { id: string } }>("/:id", {
+    schema: {
+      tags: ["Pokémon"],
+      summary: "Remove um pokémon do catálogo",
+      params: {
+        type: "object",
+        required: ["id"],
+        properties: { id: { type: "string" } },
+      },
+      response: {
+        200: {
+          type: "object",
+          required: ["deleted", "deletedPokemon"],
+          properties: { deleted: { type: "boolean" }, deletedPokemon: { $ref: "Pokemon#" } },
+        },
+        404: errorSchema,
+      },
+    },
+  }, async (req, reply) => {
+    try {
+      const deletedPokemon = database.deletePokemon(req.params.id);
+      return reply.status(200).send({ deleted: true, deletedPokemon });
+    } catch (err) {
+      return reply.status(404).send({
+        error: err instanceof Error ? err.message : "Pokémon não encontrado",
       });
-    }),
-    app.put("/:id", async (req, reply) => {
-      const { id } = req.params;
-      const { name, type, hp } = req.body;
+    }
+  });
 
-      if (!id || !name || !type || !hp) {
-        reply.status(401).send("Preencha todos os dados necessários");
-      }
-
-      const newData: Omit<Pokemon, "id"> = {
-        name: name,
-        type: type,
-        hp: hp,
-      };
-
-      let updatedPokemon: Pokemon | null = null;
-
-      try {
-        updatedPokemon = database.updatePokemon(id, newData);
-      } catch (err) {
-        reply.status(404).send({
-          updated: false,
-          message: "Pokemon não encontrado",
-        });
-      }
-      reply.status(200).send({
-        updated: true,
-        updatedPokemon: updatedPokemon,
+  app.put<{ Params: { id: string }; Body: Omit<Pokemon, "id"> }>("/:id", {
+    schema: {
+      tags: ["Pokémon"],
+      summary: "Atualiza um pokémon do catálogo",
+      params: {
+        type: "object",
+        required: ["id"],
+        properties: { id: { type: "string" } },
+      },
+      body: pokemonUpdateSchema,
+      response: {
+        200: {
+          type: "object",
+          required: ["updated", "updatedPokemon"],
+          properties: { updated: { type: "boolean" }, updatedPokemon: { $ref: "Pokemon#" } },
+        },
+        400: errorSchema,
+        404: errorSchema,
+      },
+    },
+  }, async (req, reply) => {
+    try {
+      const updatedPokemon = database.updatePokemon(req.params.id, req.body);
+      return reply.status(200).send({ updated: true, updatedPokemon });
+    } catch (err) {
+      return reply.status(404).send({
+        error: err instanceof Error ? err.message : "Pokémon não encontrado",
       });
-    }));
+    }
+  });
 };

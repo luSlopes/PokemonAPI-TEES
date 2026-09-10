@@ -1,15 +1,33 @@
 import fastify from "fastify";
-import { api_url } from "./config";
-import { InMemoryPokemonRepository } from "@infrastructure/database/inMemoryPokemon.repository";
-import type { Pokemon } from "@domain/entities/pokemon";
+import swagger from "@fastify/swagger";
+import swaggerUi from "@fastify/swagger-ui";
+import { apiUrl } from "./config/config";
 import { pokemonRoutes } from "@infrastructure/http/routes/pokemon.routes";
+import { pokemonSchema } from "@docs/swagger";
 
 const app = fastify({
   logger: true,
 });
 
+await app.register(swagger, {
+  openapi: {
+    info: {
+      title: "Catalogo Pokemon API",
+      description: "Documentação da api",
+      version: "1.0",
+    },
+    servers: [{ url: "http://localhost:3000" }],
+  },
+});
+
+app.addSchema(pokemonSchema);
+
+await app.register(swaggerUi, {
+  routePrefix: apiUrl.base + "/docs",
+});
+
 await app.register(pokemonRoutes, {
-  prefix: api_url.pokemon,
+  prefix: apiUrl.pokemon,
 });
 
 app
