@@ -7,7 +7,15 @@
     "dev": "bun --hot src/main/index.ts"
   },
   "devDependencies": {
-    "@types/bun": "latest"
+    "@eslint/js": "^10.0.1",
+    "@types/bun": "latest",
+    "eslint": "^10.10.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-prettier": "^5.5.6",
+    "globals": "^17.12.0",
+    "jiti": "^2.7.0",
+    "prettier": "^3.9.6",
+    "typescript-eslint": "^8.70.0"
   },
   "peerDependencies": {
     "typescript": "^5"

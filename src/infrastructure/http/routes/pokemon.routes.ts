@@ -1,31 +1,31 @@
-import type { FastifyPluginAsync } from "fastify";
-import { InMemoryPokemonRepository } from "@infrastructure/database/inMemoryPokemon.repository";
-import type { Pokemon } from "@domain/entities/pokemon";
+import type { FastifyPluginAsync } from 'fastify';
+import { InMemoryPokemonRepository } from '@infrastructure/database/inMemoryPokemon.repository';
+import type { Pokemon } from '@domain/entities/pokemon';
 import {
   errorSchema,
   pokemonInputSchema,
   pokemonUpdateSchema,
-} from "@docs/swagger";
-import { DuplicatedPokemonError } from "@domain/errors/duplicatedPokemon.error";
-import { PokemonNotFoundError } from "@domain/errors/pokemonNotFound.error";
+} from '@docs/swagger';
+import { DuplicatedPokemonError } from '@domain/errors/duplicatedPokemon.error';
+import { PokemonNotFoundError } from '@domain/errors/pokemonNotFound.error';
 
 const database = new InMemoryPokemonRepository();
 
 export const pokemonRoutes: FastifyPluginAsync = async (app) => {
   app.get(
-    "/",
+    '/',
     {
       schema: {
-        tags: ["Pokémon"],
-        summary: "Lista os pokémons do catálogo",
+        tags: ['Pokémon'],
+        summary: 'Lista os pokémons do catálogo',
         querystring: {
-          type: "object",
+          type: 'object',
           properties: {
-            type: { type: "string", description: "Filtra por tipo" },
+            type: { type: 'string', description: 'Filtra por tipo' },
           },
         },
         response: {
-          200: { type: "array", items: { $ref: "Pokemon#" } },
+          200: { type: 'array', items: { $ref: 'Pokemon#' } },
           404: errorSchema,
         },
       },
@@ -40,7 +40,7 @@ export const pokemonRoutes: FastifyPluginAsync = async (app) => {
             error:
               err instanceof PokemonNotFoundError
                 ? err.getMessage()
-                : "Pokémon não encontrado",
+                : 'Pokémon não encontrado',
           });
         }
       }
@@ -49,19 +49,19 @@ export const pokemonRoutes: FastifyPluginAsync = async (app) => {
   );
 
   app.post<{ Body: Pokemon }>(
-    "/",
+    '/',
     {
       schema: {
-        tags: ["Pokémon"],
-        summary: "Adiciona um pokémon ao catálogo",
+        tags: ['Pokémon'],
+        summary: 'Adiciona um pokémon ao catálogo',
         body: pokemonInputSchema,
         response: {
           201: {
-            type: "object",
-            required: ["created", "createdPokemon"],
+            type: 'object',
+            required: ['created', 'createdPokemon'],
             properties: {
-              created: { type: "boolean" },
-              createdPokemon: { $ref: "Pokemon#" },
+              created: { type: 'boolean' },
+              createdPokemon: { $ref: 'Pokemon#' },
             },
           },
           400: errorSchema,
@@ -78,30 +78,30 @@ export const pokemonRoutes: FastifyPluginAsync = async (app) => {
           error:
             err instanceof DuplicatedPokemonError
               ? err.getMessage()
-              : "Não foi possível criar o pokémon",
+              : 'Não foi possível criar o pokémon',
         });
       }
     },
   );
 
   app.delete<{ Params: { id: string } }>(
-    "/:id",
+    '/:id',
     {
       schema: {
-        tags: ["Pokémon"],
-        summary: "Remove um pokémon do catálogo",
+        tags: ['Pokémon'],
+        summary: 'Remove um pokémon do catálogo',
         params: {
-          type: "object",
-          required: ["id"],
-          properties: { id: { type: "string" } },
+          type: 'object',
+          required: ['id'],
+          properties: { id: { type: 'string' } },
         },
         response: {
           200: {
-            type: "object",
-            required: ["deleted", "deletedPokemon"],
+            type: 'object',
+            required: ['deleted', 'deletedPokemon'],
             properties: {
-              deleted: { type: "boolean" },
-              deletedPokemon: { $ref: "Pokemon#" },
+              deleted: { type: 'boolean' },
+              deletedPokemon: { $ref: 'Pokemon#' },
             },
           },
           404: errorSchema,
@@ -117,31 +117,31 @@ export const pokemonRoutes: FastifyPluginAsync = async (app) => {
           error:
             err instanceof PokemonNotFoundError
               ? err.getMessage()
-              : "Pokémon não encontrado",
+              : 'Pokémon não encontrado',
         });
       }
     },
   );
 
-  app.put<{ Params: { id: string }; Body: Omit<Pokemon, "id"> }>(
-    "/:id",
+  app.put<{ Params: { id: string }; Body: Omit<Pokemon, 'id'> }>(
+    '/:id',
     {
       schema: {
-        tags: ["Pokémon"],
-        summary: "Atualiza um pokémon do catálogo",
+        tags: ['Pokémon'],
+        summary: 'Atualiza um pokémon do catálogo',
         params: {
-          type: "object",
-          required: ["id"],
-          properties: { id: { type: "string" } },
+          type: 'object',
+          required: ['id'],
+          properties: { id: { type: 'string' } },
         },
         body: pokemonUpdateSchema,
         response: {
           200: {
-            type: "object",
-            required: ["updated", "updatedPokemon"],
+            type: 'object',
+            required: ['updated', 'updatedPokemon'],
             properties: {
-              updated: { type: "boolean" },
-              updatedPokemon: { $ref: "Pokemon#" },
+              updated: { type: 'boolean' },
+              updatedPokemon: { $ref: 'Pokemon#' },
             },
           },
           400: errorSchema,
@@ -155,7 +155,7 @@ export const pokemonRoutes: FastifyPluginAsync = async (app) => {
         return reply.status(200).send({ updated: true, updatedPokemon });
       } catch (err) {
         return reply.status(404).send({
-          error: err instanceof Error ? err.message : "Pokémon não encontrado",
+          error: err instanceof Error ? err.message : 'Pokémon não encontrado',
         });
       }
     },
