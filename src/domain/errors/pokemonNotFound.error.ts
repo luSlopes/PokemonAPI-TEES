@@ -6,4 +6,8 @@ export class PokemonNotFoundError {
     this.message = message;
     this.httpStatus = httpStatus;
   }
+
+  getMessage() {
+    return this.message;
+  }
 }

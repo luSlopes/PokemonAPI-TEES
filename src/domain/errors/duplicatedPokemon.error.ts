@@ -6,4 +6,8 @@ export class DuplicatedPokemonError {
     this.message = message;
     this.httpStatus = httpStatus;
   }
+
+  getMessage() {
+    return this.message;
+  }
 }
