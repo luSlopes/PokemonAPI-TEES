@@ -7,7 +7,7 @@ import {
   pokemonUpdateSchema,
 } from '@docs/swagger';
 import { DuplicatedPokemonError } from '@domain/errors/duplicatedPokemon.error';
-import { PokemonNotFoundError } from '@domain/errors/pokemonNotFound.error';
+import { PokemonNotFoundError } from '@domain/errors/pokemonNotFoundError';
 
 const database = new InMemoryPokemonRepository();
 

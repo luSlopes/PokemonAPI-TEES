@@ -30,7 +30,9 @@
       "@docs/*": ["./src/docs/*"],
       "@domain/*": ["./src/domain/*"],
       "@infrastructure/*": ["./src/infrastructure/*"],
-      "@main/*": ["./src/main/*"]
+      "@main/*": ["./src/main/*"],
+      "@application/*": ["./src/application/*"],
+      "@generated/*": ["./src/generated/*"]
     }
   }
 }

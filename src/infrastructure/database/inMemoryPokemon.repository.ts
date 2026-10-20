@@ -1,6 +1,6 @@
 import { type IPokemonRepository } from '@domain/repositories/pokemon.repository';
 import { type Pokemon } from '@domain/entities/pokemon';
-import { PokemonNotFoundError } from '@domain/errors/pokemonNotFound.error';
+import { PokemonNotFoundError } from '@domain/errors/pokemonNotFoundError';
 import { DuplicatedPokemonError } from '@domain/errors/duplicatedPokemon.error';
 
 export class InMemoryPokemonRepository implements IPokemonRepository {

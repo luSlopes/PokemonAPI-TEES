@@ -4,17 +4,20 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "dev": "bun --hot src/main/index.ts"
+    "dev": "bun --hot src/main/index.ts",
+    "postinstall": "prisma skills sync || exit 0"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
     "@types/bun": "latest",
+    "@types/pg": "^8.23.1",
     "eslint": "^10.10.0",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.5.6",
     "globals": "^17.12.0",
     "jiti": "^2.7.0",
     "prettier": "^3.9.6",
+    "prisma": "7.10.0",
     "typescript-eslint": "^8.70.0"
   },
   "peerDependencies": {
@@ -23,6 +26,11 @@
   "dependencies": {
     "@fastify/swagger": "^9.8.1",
     "@fastify/swagger-ui": "^6.1.1",
-    "fastify": "^5.12.0"
+    "@prisma/adapter-pg": "^7.10.1",
+    "@prisma/client": "^7.10.1",
+    "dotenv": "^18.0.8",
+    "fastify": "^5.12.0",
+    "pg": "^8.23.1",
+    "zod": "^4.6.7"
   }
 }
